@@ -18,10 +18,14 @@ public class Main {
 
 		try {
 			// 정상적인 흐름
-			Member member = new Member();
-			member.setId(2L);
-			member.setName("helloB");
-			entityManager.persist(member);
+
+			// 조회
+			Member findMember = entityManager.find(Member.class, 1L);
+			System.out.println("findMember.id = " + findMember.getId());
+			System.out.println("findMember.name = " + findMember.getName());
+
+			// 삭제
+			entityManager.remove(findMember);
 
 			tx.commit(); // 트랜잭션 종료
 		} catch (Exception e) {
