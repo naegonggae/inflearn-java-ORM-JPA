@@ -1,5 +1,6 @@
 package jpa;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -24,11 +25,19 @@ public class Main {
 		try {
 			// 정상적인 흐름
 
-			// 수정
-			Member findMember = entityManager.find(Member.class, 2L);
-			findMember.setName("JPA");
-			// 왜 수정만 하고 저장하지 않았는데 수정이 정상적으로 될까?
-			// jpa 가 뭔가 수정을 발견하면 커밋 날리기 전에 update 쿼리를 날린다.
+			// 전체 회원을 조회
+			// JPQL 검색을 할때 테이블이 아닌 엔티티객체를 대상으로 탐색을 한다.
+			// 그냥 DB 쿼리를 날려서 소스를 가져오면 DB에 종속적이게 된다.
+			// 그렇기 때문에 엔티티객체를 대상으로 할 수 있는 JPQL 이라는 쿼리를 제공받는다.
+			List<Member> result = entityManager.createQuery("SELECT m from Member as m",
+							Member.class)
+					.setFirstResult(1)
+					.setMaxResults(10) // 1번 부터 10까지 가져와 Limit  페이징
+					.getResultList();
+
+			for (Member member : result) {
+				System.out.println("member.name = " + member.getName());
+			}
 
 			tx.commit(); // 트랜잭션 종료
 		} catch (Exception e) {
