@@ -25,21 +25,20 @@ public class Main {
 		try {
 			// 정상적인 흐름
 
-			// 전체 회원을 조회
-			// JPQL 검색을 할때 테이블이 아닌 엔티티객체를 대상으로 탐색을 한다.
-			// 그냥 DB 쿼리를 날려서 소스를 가져오면 DB에 종속적이게 된다.
-			// 그렇기 때문에 엔티티객체를 대상으로 할 수 있는 JPQL 이라는 쿼리를 제공받는다.
-			List<Member> result = entityManager.createQuery("SELECT m from Member as m",
-							Member.class)
-					.setFirstResult(1)
-					.setMaxResults(10) // 1번 부터 10까지 가져와 Limit  페이징
-					.getResultList();
+			// 비영속
+			Member member = new Member();
+			member.setId(100L);
+			member.setName("helloJPA");
 
-			for (Member member : result) {
-				System.out.println("member.name = " + member.getName());
-			}
+			// 영속
+			// 이때는 DB에 저장되지 않는다.
+			System.out.println("===before===");
+			entityManager.persist(member); // 영속상태에 저장
+			entityManager.detach(member); // 영속상태에서 지움
+			entityManager.remove(member); // 실제 DB의 데이터를 지움
+			System.out.println("===after===");
 
-			tx.commit(); // 트랜잭션 종료
+			tx.commit(); // 트랜잭션 종료 // 영속상태에 있는거를 DB에 저장 쿼리문 날리는 곳
 		} catch (Exception e) {
 			// 뭔가 에러나 취소가 있으면 롤백
 			tx.rollback();
