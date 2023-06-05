@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
@@ -19,7 +21,8 @@ import javax.persistence.Transient;
 //@Table(name = "Member") // 이름 지정가능 , 엔티티와 메핑할 테이블 지정
 public class Member {
 
-	@Id
+	@Id // 이거하나만 생성하면 ID 수동 할당
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // 이거까지 추가하면 id 자동할당함
 	private Long id;
 
 	// 객체에서는 username 쓰고 column 에서는 name 쓰고 싶을때
@@ -27,34 +30,23 @@ public class Member {
 	@Column(name = "name")
 	private String username;
 
-	private Integer age;
-
-	// enum 을 DB에 쓰고 싶을때
-	// 디폴트가 ORDINAL 인데 이거는 enum 에 쓰인 순서대로 0,1,2 카운트해서 숫자로 표시하는거야
-	// 그래서 변경되었을때 오류가 많아서 반드시 String 사용
-	@Enumerated(EnumType.STRING)
-	private RoleType roleType;
-
-	// 시간을 DB에 저장할때는 Temporal 를 사용하는데 3가지 내부 속성중에 골라준다.
-	@Temporal(TemporalType.TIMESTAMP) // 요건 날짜 시간 둘다 속함
-	private Date createdDate;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date lastModifiedDate;
-
-	// 최신 기술은 이거임
-	private LocalDate testLocalDate; // DATE
-	private LocalTime testLocalTime; // TIME
-	private LocalDateTime testLocalDateTime; // TIMESTAMP
-
-	// varchar 를 넘어서는 큰 컨텐츠를 사용할때
-	@Lob
-	private String description; // dlob clob 있는데 String 은 clob 임
-
-	// DB 에 저장하지 않는 필드로 지정
-	@Transient
-	private int temp;
 	public Member() { // 기본 생성자는 무조건 필요하다
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }
 
