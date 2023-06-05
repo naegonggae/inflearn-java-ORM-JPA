@@ -25,17 +25,12 @@ public class Main {
 		try {
 			// 정상적인 흐름
 
-			Member member = entityManager.find(Member.class, 150L);
-			member.setName("ZZZZ");
-			// 수정할때는 그냥 값만 변경해줘도 알아서 commit 할때 수정쿼리날려줌
-			// 변경감지
-			// commit 하면 영속성 컨텍스트 내부에 flush() 가 호출됨
-			// 1차 캐시에 객체 아이디, 객체, 이전에 저장되었던 객체 스냅샷 이렇게 있는데 현재 객체와 이전 스냅샷을 비교함
-			// 비교해서 달라진게 있으면 쓰기 지연 SQL 저장소에 update 쿼리문 작성해서 모아둠
-			// DB 에 flush 함 -> commit DB 에 반영
-			// 삭제도 똑같이 메커니즘으로 스냅샷과 비교해서 객체가 없으면 remove 쿼리를 날림
+			Member member = new Member(200L, "member200");
+			entityManager.persist(member);
 
-//			entityManager.persist(member); 수정한다고 이렇게 하면 안된다.
+			entityManager.flush();
+			// 쓰기 지연 SQL 저장소에 있는 쿼리문을 DB에 바로 날림
+			// 그렇다고 1차 캐시의 내용을 초기화하지는 않아 이건 commit 단계정도 되야 할듯
 
 			System.out.println("================");
 
