@@ -31,6 +31,9 @@ public class Main {
 			Member findMember2 = entityManager.find(Member.class, 101L);
 			// 영속성 컨텍스트에 101번 객체가 있기때문에 조회 쿼리를 날리지 않고 그냥 가져온다.
 
+			System.out.println("result = " + (findMember1 == findMember2));
+			// 영속 엔티티는 동일성도 보장한다.
+
 			tx.commit(); // 트랜잭션 종료 // 영속상태에 있는거를 DB에 저장 쿼리문 날리는 곳
 		} catch (Exception e) {
 			// 뭔가 에러나 취소가 있으면 롤백
