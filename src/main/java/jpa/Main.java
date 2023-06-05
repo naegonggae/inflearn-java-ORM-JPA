@@ -25,22 +25,11 @@ public class Main {
 		try {
 			// 정상적인 흐름
 
-			// 비영속
-			Member member = new Member();
-			member.setId(101L);
-			member.setName("helloJPA");
-
-			// 영속
-			// 이때는 DB에 저장되지 않는다.
-			System.out.println("===before===");
-			entityManager.persist(member); // 영속상태에 저장
-			System.out.println("===after===");
-
-			Member findMember = entityManager.find(Member.class, 101L);
-			// 조회하는 쿼리가 나가지 않았는데 출력문이 정상작동했다.
-			// 1차 캐시에 저장된걸 가져왔기 때문
-			System.out.println("findMember = " + findMember.getId());
-			System.out.println("findMember = " + findMember.getName());
+			Member findMember1 = entityManager.find(Member.class, 101L);
+			// 영속성 컨텍스트(1차 캐시)에 101번 객체가 없어서 DB 에서 데이터를 가져온다. -> 조회 쿼리문 날림
+			// DB 에서 가져온 101번 객체를 영속성 컨텍스트에 둔다.
+			Member findMember2 = entityManager.find(Member.class, 101L);
+			// 영속성 컨텍스트에 101번 객체가 있기때문에 조회 쿼리를 날리지 않고 그냥 가져온다.
 
 			tx.commit(); // 트랜잭션 종료 // 영속상태에 있는거를 DB에 저장 쿼리문 날리는 곳
 		} catch (Exception e) {
