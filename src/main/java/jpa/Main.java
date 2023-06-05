@@ -25,15 +25,18 @@ public class Main {
 		try {
 			// 정상적인 흐름
 
-			Member member1 = new Member(150L, "A");
-			Member member2 = new Member(160L, "B");
+			Member member = entityManager.find(Member.class, 150L);
+			member.setName("ZZZZ");
+			// 수정할때는 그냥 값만 변경해줘도 알아서 commit 할때 수정쿼리날려줌
+			// 변경감지
+			// commit 하면 영속성 컨텍스트 내부에 flush() 가 호출됨
+			// 1차 캐시에 객체 아이디, 객체, 이전에 저장되었던 객체 스냅샷 이렇게 있는데 현재 객체와 이전 스냅샷을 비교함
+			// 비교해서 달라진게 있으면 쓰기 지연 SQL 저장소에 update 쿼리문 작성해서 모아둠
+			// DB 에 flush 함 -> commit DB 에 반영
+			// 삭제도 똑같이 메커니즘으로 스냅샷과 비교해서 객체가 없으면 remove 쿼리를 날림
 
-			// JDBC 배치 기능 사용할 수 있다.
-			// persistence 에 배치 사이즈만큼 모아서 저장시키기 때문에 적은 요청으로 저장가능
-			// 버퍼링 기능이라 하고 쉽게 말하면 하나하나 보내던걸 모아서 보낸다는 느낌
-			entityManager.persist(member1);
-			entityManager.persist(member2);
-			// 영속성 컨텍스트에 데이터를 저장하고, 임시 저장 insert SQL 문을 작성해 둔다. -> 쓰기 지연
+//			entityManager.persist(member); 수정한다고 이렇게 하면 안된다.
+
 			System.out.println("================");
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
