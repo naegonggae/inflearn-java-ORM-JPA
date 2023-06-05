@@ -25,16 +25,18 @@ public class Main {
 		try {
 			// 정상적인 흐름
 
-			Member findMember1 = entityManager.find(Member.class, 101L);
-			// 영속성 컨텍스트(1차 캐시)에 101번 객체가 없어서 DB 에서 데이터를 가져온다. -> 조회 쿼리문 날림
-			// DB 에서 가져온 101번 객체를 영속성 컨텍스트에 둔다.
-			Member findMember2 = entityManager.find(Member.class, 101L);
-			// 영속성 컨텍스트에 101번 객체가 있기때문에 조회 쿼리를 날리지 않고 그냥 가져온다.
+			Member member1 = new Member(150L, "A");
+			Member member2 = new Member(160L, "B");
 
-			System.out.println("result = " + (findMember1 == findMember2));
-			// 영속 엔티티는 동일성도 보장한다.
+			// JDBC 배치 기능 사용할 수 있다.
+			// persistence 에 배치 사이즈만큼 모아서 저장시키기 때문에 적은 요청으로 저장가능
+			// 버퍼링 기능이라 하고 쉽게 말하면 하나하나 보내던걸 모아서 보낸다는 느낌
+			entityManager.persist(member1);
+			entityManager.persist(member2);
+			// 영속성 컨텍스트에 데이터를 저장하고, 임시 저장 insert SQL 문을 작성해 둔다. -> 쓰기 지연
+			System.out.println("================");
 
-			tx.commit(); // 트랜잭션 종료 // 영속상태에 있는거를 DB에 저장 쿼리문 날리는 곳
+			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
 			// 뭔가 에러나 취소가 있으면 롤백
 			tx.rollback();

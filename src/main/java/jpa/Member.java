@@ -14,6 +14,14 @@ public class Member {
 	@Column(name = "name") // 이름 지정가능
 	private String name;
 
+	public Member() { // 기본 생성자는 무조건 필요하다
+	}
+
+	public Member(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}
