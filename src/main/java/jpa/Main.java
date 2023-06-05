@@ -25,12 +25,20 @@ public class Main {
 		try {
 			// 정상적인 흐름
 
-			Member member = new Member(200L, "member200");
-			entityManager.persist(member);
+			Member member = entityManager.find(Member.class, 150L);
+			// 영속성 컨텍스트에 없는걸 조회해서 데이터를 DB 에서 가져오고 영속성 컨텍스트에 저장
 
-			entityManager.flush();
-			// 쓰기 지연 SQL 저장소에 있는 쿼리문을 DB에 바로 날림
-			// 그렇다고 1차 캐시의 내용을 초기화하지는 않아 이건 commit 단계정도 되야 할듯
+			member.setName("AAAAAA");
+			// 영속성 컨텍스트에서 값 변경
+
+			entityManager.detach(member);
+			// 영속성 컨텍스트에 하나 들어와있던 데이터를 무시하기로 함
+			// commit 할때 수정이 되었지만 detach 를 해서 영속성 컨텍스트에서 제외했기때문에 아무일도 일어나지 않음
+
+			// 준영속으로 만들기
+//			entityManager.clear();
+//			entityManager.close();
+//			entityManager.detach(member);
 
 			System.out.println("================");
 
