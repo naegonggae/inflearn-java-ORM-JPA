@@ -21,17 +21,15 @@ import javax.persistence.Transient;
 //@Table(name = "Member") // 이름 지정가능 , 엔티티와 메핑할 테이블 지정
 public class Member {
 
-	@Id // 이거하나만 생성하면 ID 수동 할당
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // 이거까지 추가하면 id 자동할당함
+	@Id @GeneratedValue
 	private Long id;
 
-	// 객체에서는 username 쓰고 column 에서는 name 쓰고 싶을때
-	// 유니크 조건은 여기서 쓰지말고 @Table 에서 쓰자
-	@Column(name = "name")
-	private String username;
+	@Column(name = "USERNAME")
+	private String name;
 
-	public Member() { // 기본 생성자는 무조건 필요하다
-	}
+	@Column(name = "TEAM_ID")
+	private Long teamId;
+
 
 	public Long getId() {
 		return id;
@@ -41,12 +39,20 @@ public class Member {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getName() {
+		return name;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Long getTeamId() {
+		return teamId;
+	}
+
+	public void setTeamId(Long teamId) {
+		this.teamId = teamId;
 	}
 }
 

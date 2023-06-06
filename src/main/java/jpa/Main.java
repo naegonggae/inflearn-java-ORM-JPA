@@ -24,19 +24,20 @@ public class Main {
 
 		try {
 			// 정상적인 흐름
+			Team team = new Team();
+			team.setName("TeamA");
+			entityManager.persist(team); // persist 하면 id 값을 알 수 있음
 
 			Member member = new Member();
-			member.setUsername("A");
-
-			System.out.println("==========");
+			member.setName("member1");
+			member.setTeamId(team.getId()); // 위의 team id 를 여기에 넣어줘
+			// 객체지향 스럽지가 않다. setTeam() 이라 해야할것같지만...
 			entityManager.persist(member);
-			// IDENTITY 전략을 사용해서 id 를 자동 생성하면 member 를 저장하는 경우 예외적으로 바로 쿼리를 날린다.
-			// 이유는 영속성 컨텍스트(1차 캐시)에 저장하려면 id 값이 필요한데 위의 경우에는 알 수 없기 때문이다.
-			System.out.println("member.id = " + member.getId());
-			// persistence() 하고 쿼리를 바로 날리게 되면 그때 서야 id가 생성되고 id 값을 조회해 출력할 수 있게 된다.
-			// 이렇게 되면 버퍼링 기능을 사용할 수 없다는 단점이 있는데 크게 상관은 없다고 한다.
-			System.out.println("==========");
-			// 시퀀스 전략은 id 를 시퀀스에서 50개씩(디폴트) 생성해서 받아오기때문에 persistence()에서 쿼리를 바로 날리지 않고 트랜잭션을 유지한다.
+
+			// Member 의 team id 를 조회 할 때도 문제다
+			Member findMember = entityManager.find(Member.class, member.getId());
+			Long findTeamId = findMember.getId();
+			Team findTeam = entityManager.find(Team.class, findTeamId);
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
