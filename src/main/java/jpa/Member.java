@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity(name = "Member") // 다른 이름 지정가능
 //@Table(name = "Member") // 이름 지정가능 , 엔티티와 메핑할 테이블 지정
@@ -21,6 +22,10 @@ public class Member {
 	@ManyToOne
 	@JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 이렇게 해주면 일대다 양방향 매핑이 가능함
 	private Team team;
+
+	@OneToOne
+	@JoinColumn(name = "LOCKER_ID")
+	private Locker locker;
 	public Long getId() {
 		return id;
 	}
