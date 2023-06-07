@@ -64,6 +64,15 @@ public class Member {
 		this.team = team;
 		team.getMembers().add(this); // Member 자기 자신의 인스턴스를 리스트에 넣어준다.
 	}
+
+	@Override
+	public String toString() {
+		return "Member{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", team=" + team +
+				'}';
+	}
 }
 
 // 용어 정리

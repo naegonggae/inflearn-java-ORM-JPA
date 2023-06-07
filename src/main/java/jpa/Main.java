@@ -45,11 +45,8 @@ public class Main {
 			Team findTeam = entityManager.find(Team.class, team.getId());
 			List<Member> members = findTeam.getMembers();
 			System.out.println("=============");
-			for (Member m : members) {
-				System.out.println("m = " + m.getUsername());
-			} // 1. member 리스트에 값을 안넣어줘도 값이 나오긴한다.
-			// 4. test 할때도 jpa 없이 환경을 만들어서 하다보면 member 리스트에 값은 안나오게된다. 문제점 2
-			// 결론 양방향일경우 둘다 값을 세팅해줘라
+			System.out.println("findTeam = " + findTeam); // 양방향 매핑시 member 와 team 에 toString()이 되어있다. 그러면 서로 계속 불러오기 때문에 무한루프에 걸린다.
+			// 양방향 매핑할때 toString 어노테이션 쓰지마라, 컨트롤러에서 entity 를 뽑아내게 하지 마라 -> jSON 생성 라이브러리로 인한 문제 해결
 			System.out.println("=============");
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
@@ -68,3 +65,4 @@ public class Main {
 // 객체는 양방향 맵핑을 하기 위해 단방향 조인을 서로서로 했다고 생각해야함
 // 테이블은 FK 키를 설정하므로써 양방향이 가능해진다.
 // many 쪽을 주인으로 해라
+// 처음 설계 할때 일대 다 인경우에 다인 경우에다가 단방향으로 쭉만들고 어쩔 수 없이 다 쪽으로 조회해야한다면 그거만 양방향으로 바꿔라
