@@ -8,28 +8,36 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import net.bytebuddy.dynamic.TypeResolutionStrategy.Lazy;
 
 @Entity(name = "Member") // 다른 이름 지정가능
 //@Table(name = "Member") // 이름 지정가능 , 엔티티와 메핑할 테이블 지정
 public class Member {
 
 	@Id @GeneratedValue
+	@Column(name = "MEMBER_ID")
 	private Long id;
 
 	@Column(name = "USERNAME")
-	private String name;
+	private String username;
 
-	@Column(name = "TEAM_ID")
-	private Long teamId;
+//	@Column(name = "TEAM_ID")
+//	private Long teamId;
 
+	@ManyToOne// (fetch = FetchType.LAZY)// 쿼리가 따로 따로 나감, 디폴트면 같이 나감 // 하나의 팀에 여러 멤버가 있다.
+	@JoinColumn(name = "TEAM_ID") // 조인할 컬럼이 뭐냐
+	private Team team;
 
 	public Long getId() {
 		return id;
@@ -39,20 +47,20 @@ public class Member {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public Long getTeamId() {
-		return teamId;
+	public Team getTeam() {
+		return team;
 	}
 
-	public void setTeamId(Long teamId) {
-		this.teamId = teamId;
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 }
 

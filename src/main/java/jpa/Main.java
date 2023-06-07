@@ -23,21 +23,28 @@ public class Main {
 		tx.begin(); // 트랜잭션 시작
 
 		try {
-			// 정상적인 흐름
+			// 저장
 			Team team = new Team();
 			team.setName("TeamA");
 			entityManager.persist(team); // persist 하면 id 값을 알 수 있음
 
 			Member member = new Member();
-			member.setName("member1");
-			member.setTeamId(team.getId()); // 위의 team id 를 여기에 넣어줘
-			// 객체지향 스럽지가 않다. setTeam() 이라 해야할것같지만...
+			member.setUsername("member1");
+			member.setTeam(team); // 이렇게 하면 알아서 조인 해줌
+
 			entityManager.persist(member);
 
-			// Member 의 team id 를 조회 할 때도 문제다
+			entityManager.flush();
+			entityManager.clear();
+
+			// 조회
 			Member findMember = entityManager.find(Member.class, member.getId());
-			Long findTeamId = findMember.getId();
-			Team findTeam = entityManager.find(Team.class, findTeamId);
+			Team findTeam = findMember.getTeam();
+			System.out.println("findTeam = " + findTeam.getName());
+			
+			// 수정
+			Team newTeam = entityManager.find(Team.class, 100L);
+			findMember.setTeam(newTeam); // 만약 id 가 100 인 Team 이 있다면 이렇게 갈아 끼울수 있어
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
