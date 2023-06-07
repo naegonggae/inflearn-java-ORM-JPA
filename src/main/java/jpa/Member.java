@@ -1,25 +1,11 @@
 package jpa;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import net.bytebuddy.dynamic.TypeResolutionStrategy.Lazy;
 
 @Entity(name = "Member") // 다른 이름 지정가능
 //@Table(name = "Member") // 이름 지정가능 , 엔티티와 메핑할 테이블 지정
@@ -32,13 +18,9 @@ public class Member {
 	@Column(name = "USERNAME")
 	private String username;
 
-//	@Column(name = "TEAM_ID")
-//	private Long teamId;
-
-	@ManyToOne// (fetch = FetchType.LAZY)// 쿼리가 따로 따로 나감, 디폴트면 같이 나감 // 하나의 팀에 여러 멤버가 있다.
-	@JoinColumn(name = "TEAM_ID") // 조인할 컬럼이 뭐냐
-	private Team team; // 이게 연관관계 주인이다. team_id 라는 FK 랑 연결된거기 때문
-
+	@ManyToOne
+	@JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 이렇게 해주면 일대다 양방향 매핑이 가능함
+	private Team team;
 	public Long getId() {
 		return id;
 	}
@@ -53,25 +35,6 @@ public class Member {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public Team getTeam() {
-		return team;
-	}
-
-	public void changeTeam(Team team) { // 이렇게 관례적이지 않은 메서드를 새로 만들때는 메서드명을 바꿔준다.
-		// 연관관계 편의 메서드라고 함
-		this.team = team;
-		team.getMembers().add(this); // Member 자기 자신의 인스턴스를 리스트에 넣어준다.
-	}
-
-	@Override
-	public String toString() {
-		return "Member{" +
-				"id=" + id +
-				", username='" + username + '\'' +
-				", team=" + team +
-				'}';
 	}
 }
 
