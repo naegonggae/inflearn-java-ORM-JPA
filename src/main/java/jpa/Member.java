@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity(name = "Member") // 다른 이름 지정가능
@@ -30,9 +31,8 @@ public class Member {
 	@JoinColumn(name = "LOCKER_ID")
 	private Locker locker;
 
-	@ManyToMany
-	@JoinColumn(name = "MEMBER_PRODUCT")
-	private List<Product> products = new ArrayList<>();
+	@OneToMany(mappedBy = "member")
+	private List<MemberProduct> memberProducts = new ArrayList<>();
 	public Long getId() {
 		return id;
 	}
