@@ -59,8 +59,10 @@ public class Member {
 		return team;
 	}
 
-	public void setTeam(Team team) {
+	public void changeTeam(Team team) { // 이렇게 관례적이지 않은 메서드를 새로 만들때는 메서드명을 바꿔준다.
+		// 연관관계 편의 메서드라고 함
 		this.team = team;
+		team.getMembers().add(this); // Member 자기 자신의 인스턴스를 리스트에 넣어준다.
 	}
 }
 

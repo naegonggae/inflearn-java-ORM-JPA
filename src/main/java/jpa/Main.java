@@ -26,23 +26,31 @@ public class Main {
 			// 저장
 			Team team = new Team();
 			team.setName("TeamA");
+//			team.getMembers().add(member); // member 리스트에 저장한경우 null 이 뜬다.
 			entityManager.persist(team); // persist 하면 id 값을 알 수 있음
 
 			Member member = new Member();
 			member.setUsername("member1");
-			member.setTeam(team); // 이렇게 하면 알아서 조인 해줌
-
+			member.changeTeam(team); // 이렇게 주인한테 넣어줘야지 정상 반영이된다. /**
 			entityManager.persist(member);
 
-			entityManager.flush();
-			entityManager.clear();
+			// 3. 그래서 양방향일 경우 주인과 그 반대편 리스트 모두 값을 넣어줘야 객체 지향적이라고 할 수 있다.
+//			team.getMembers().add(member); /** 이 두개를 반드시 해줘야하는데 까먹기 쉽다 그래서 setTeam() 메서드에 이 로직을 넣어준다.
 
-			// 조회
-			Member findMember = entityManager.find(Member.class, member.getId());
-			List<Member> members = findMember.getTeam().getMembers(); // 양방향 연관관계
+			// 2. 하지만 이 두개를 주석처리하면 member 리스트의 값은 나오지 않는다. 문제점 1
+//			entityManager.flush();
+//			entityManager.clear(); // 이게 있으면 방금 저장한것들이 1차캐시에 머물지 않고 DB로 들어가 join에 의해 값이 공유되서
+			// 다음 조회할때 member 리스트에 반영이된다. 하지만 이걸 주석처리하면 1차캐시에만 머물러서 member 리스트는 값을 공유받지 못한 상태에서 출력이된다.
+
+			Team findTeam = entityManager.find(Team.class, team.getId());
+			List<Member> members = findTeam.getMembers();
+			System.out.println("=============");
 			for (Member m : members) {
 				System.out.println("m = " + m.getUsername());
-			}
+			} // 1. member 리스트에 값을 안넣어줘도 값이 나오긴한다.
+			// 4. test 할때도 jpa 없이 환경을 만들어서 하다보면 member 리스트에 값은 안나오게된다. 문제점 2
+			// 결론 양방향일경우 둘다 값을 세팅해줘라
+			System.out.println("=============");
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
