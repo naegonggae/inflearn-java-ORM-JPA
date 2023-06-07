@@ -39,12 +39,10 @@ public class Main {
 
 			// 조회
 			Member findMember = entityManager.find(Member.class, member.getId());
-			Team findTeam = findMember.getTeam();
-			System.out.println("findTeam = " + findTeam.getName());
-			
-			// 수정
-			Team newTeam = entityManager.find(Team.class, 100L);
-			findMember.setTeam(newTeam); // 만약 id 가 100 인 Team 이 있다면 이렇게 갈아 끼울수 있어
+			List<Member> members = findMember.getTeam().getMembers(); // 양방향 연관관계
+			for (Member m : members) {
+				System.out.println("m = " + m.getUsername());
+			}
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
@@ -57,3 +55,8 @@ public class Main {
 		emf.close();
 	}
 }
+// 객체는 참조를 활용하고 테이블은 외래키로 조인을 하는데 뭐가 다른가
+// 연관관계 주인이 있구나 알 수 있어
+// 객체는 양방향 맵핑을 하기 위해 단방향 조인을 서로서로 했다고 생각해야함
+// 테이블은 FK 키를 설정하므로써 양방향이 가능해진다.
+// many 쪽을 주인으로 해라

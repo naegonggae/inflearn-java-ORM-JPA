@@ -37,7 +37,7 @@ public class Member {
 
 	@ManyToOne// (fetch = FetchType.LAZY)// 쿼리가 따로 따로 나감, 디폴트면 같이 나감 // 하나의 팀에 여러 멤버가 있다.
 	@JoinColumn(name = "TEAM_ID") // 조인할 컬럼이 뭐냐
-	private Team team;
+	private Team team; // 이게 연관관계 주인이다. team_id 라는 FK 랑 연결된거기 때문
 
 	public Long getId() {
 		return id;
