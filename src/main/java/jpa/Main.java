@@ -26,33 +26,20 @@ public class Main {
 			entityManager.flush();
 			entityManager.clear();
 
-			//#2
-			Member member = entityManager.getReference(Member.class, member1.getId());
-			System.out.println("member = " + member.getClass()); // 프록시
+			Member refMember = entityManager.getReference(Member.class, member1.getId());
+			System.out.println("refMember = " + refMember.getClass()); // 프록시클래스
 
-			Member reference = entityManager.find(Member.class, member1.getId());
-			System.out.println("reference = " + reference.getClass()); // class jpa.Member
-			// 과연 위의 두개가 같은 타입으로 나올까?
-			// 결론 둘다 프록시로 맞춰줌
+			entityManager.detach(refMember);
+			// 프록시 클래스는 영속성 컨텍스트에서 값을 찾아오는데 영속성컨텍스트를 비워버리면 no Session 에러가 떠서 찾아올수 없게 된다.
+			// 실무에서 많이 만난다고함
 
-			//#1
-//			Member member = entityManager.find(Member.class, member1.getId());
-//			System.out.println("member = " + member.getClass()); // class jpa.Member
-//
-//			Member reference = entityManager.getReference(Member.class, member1.getId());
-//			System.out.println("reference = " + reference.getClass()); // class jpa.Member
-
-			// jpa 에서는 이걸 보장해야해
-			System.out.println("a == a = " + (member==reference)); // 한 트랜잭션 안에서 같은 영속성 컨텍스트의 값을 가져오면 == 을 보장함
-			// 왜 두개다 class jpa.Member 인가?
-			// 1. 영속성 컨텍스트에 class jpa.Member 가 올라가있기때문에 굳이 프록시클래스를 생성할 이유가 없다.
-			// 2. == 비교했을때 true 를 반환시키기위해 즉, 같은 영속성 컨텍스트에 있는걸 사용했기때문에 같은 클래스가 나온다.
-
+			System.out.println("refMember = " + refMember.getUsername());
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
 			// 뭔가 에러나 취소가 있으면 롤백
 			tx.rollback();
+			System.out.println("e = " + e);
 		} finally {
 			entityManager.close();
 		}
