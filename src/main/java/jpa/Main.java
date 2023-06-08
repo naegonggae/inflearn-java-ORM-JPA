@@ -28,8 +28,9 @@ public class Main {
 			entityManager.flush();
 			entityManager.clear();
 
-			Movie findMovie = entityManager.find(Movie.class, movie.getId()); // Item 과 inner join 해서 가져옴
-			System.out.println("findMovie = " + findMovie);
+			Item item = entityManager.find(Item.class, movie.getId());// Item 과 inner join 해서 가져옴
+			System.out.println("item = " + item);
+			// 부모 클래스로 조회하면 자식클래스를 다 뒤진다. 저장할때는 심플함
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {

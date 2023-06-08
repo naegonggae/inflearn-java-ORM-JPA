@@ -8,9 +8,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 싱글 테이블은 상속받은 클래스들을 엔티티로 저장하지 않고 부모클래스에 뭉쳐놓는다
-//@DiscriminatorColumn// 단일 테이블 전략은 이게 없어도 자동으로 실행시켜줌
-public class Item {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) // 싱글 테이블은 상속받은 클래스들을 엔티티로 저장하지 않고 부모클래스에 뭉쳐놓는다
+//@DiscriminatorColumn 구현 클래스마다 단일 테이블 전략은 이걸 사용하지 않는다.
+public abstract class Item { // 구현 클래스마다 단일 테이블 전략, 이건 쓰지마 그냥
 	@Id @GeneratedValue
 	private Long id;
 	private String name;
