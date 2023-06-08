@@ -22,19 +22,32 @@ public class Main {
 			member1.setUsername("member1");
 			entityManager.persist(member1);
 
-			Member member2 = new Member();
-			member2.setUsername("member2");
-			entityManager.persist(member2);
 
 			entityManager.flush();
 			entityManager.clear();
 
-			Member m1 = entityManager.find(Member.class, member1.getId());
-			Member m2 = entityManager.getReference(Member.class, member2.getId());
-			System.out.println("m1 + m2 = " + (m1.getClass() == m2.getClass())); // 다르다
-			// 파일 비교는 == 으로 하면 안됨
-			System.out.println("m1 + m2 = " + (m1 instanceof Member)); // 클래스를 비교할때는 이렇게 해야함
-			System.out.println("m1 + m2 = " + (m2 instanceof Member));
+			//#2
+			Member member = entityManager.getReference(Member.class, member1.getId());
+			System.out.println("member = " + member.getClass()); // 프록시
+
+			Member reference = entityManager.find(Member.class, member1.getId());
+			System.out.println("reference = " + reference.getClass()); // class jpa.Member
+			// 과연 위의 두개가 같은 타입으로 나올까?
+			// 결론 둘다 프록시로 맞춰줌
+
+			//#1
+//			Member member = entityManager.find(Member.class, member1.getId());
+//			System.out.println("member = " + member.getClass()); // class jpa.Member
+//
+//			Member reference = entityManager.getReference(Member.class, member1.getId());
+//			System.out.println("reference = " + reference.getClass()); // class jpa.Member
+
+			// jpa 에서는 이걸 보장해야해
+			System.out.println("a == a = " + (member==reference)); // 한 트랜잭션 안에서 같은 영속성 컨텍스트의 값을 가져오면 == 을 보장함
+			// 왜 두개다 class jpa.Member 인가?
+			// 1. 영속성 컨텍스트에 class jpa.Member 가 올라가있기때문에 굳이 프록시클래스를 생성할 이유가 없다.
+			// 2. == 비교했을때 true 를 반환시키기위해 즉, 같은 영속성 컨텍스트에 있는걸 사용했기때문에 같은 클래스가 나온다.
+
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
