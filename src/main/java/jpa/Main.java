@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import org.hibernate.Hibernate;
 
 public class Main {
@@ -31,14 +32,16 @@ public class Main {
 			entityManager.flush();
 			entityManager.clear();
 
-			Member member = entityManager.find(Member.class, member1.getId()); // member 만 쿼리로 조회함
-			System.out.println("member = " + member.getTeam().getClass()); // 프록시 클래스로 뜸
+//			Member member = entityManager.find(Member.class, member1.getId()); // member 만 쿼리로 조회함
+			List<Member> members = entityManager.createQuery(
+							"select m from Member m", Member.class)
+					.getResultList();
+			// JPQL 은 "select m from Member m" 이게 번역이 되는데 이러면 member 만 가져오게 됨 -> 이때 즉시 로딩이기 때문에 TEAM 도 불러옴
+			// 리스트의 사이즈 만큼 team 을 불러옴
+			System.out.println(members.size());
 
-			System.out.println("==============");
-			member.getTeam().getName(); // 이 시점에 team 을 사용하는 시점에 쿼리가 나간다.
-			// 팀이 초기화 되면서 쿼리가 나감
-			// 즉, LAZY 로 패치해놓으면 연관된걸 프록시로 가져온다.
-			System.out.println("==============");
+			// SQL : Select * from Member
+			// SQL : Select * from Team where TEAM_ID = xxx
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
@@ -69,3 +72,4 @@ public class Main {
 }
 // 근데 실무에서 그냥 즉시 로딩 쓰지마
 // 예상치 못한 쿼리가 나갈 수 있다.
+// 다 지연로딩으로 쓰다가 한번에 불러와야할 경우가 있다면 JPQL 에서 패치 조인해서 불러온다.
