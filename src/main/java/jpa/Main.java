@@ -19,27 +19,33 @@ public class Main {
 
 		try {
 
+			Team team = new Team();
+			team.setName("teamA");
+			entityManager.persist(team);
+
 			Member member1 = new Member();
 			member1.setUsername("member1");
+			member1.setTeam(team);
 			entityManager.persist(member1);
-
 
 			entityManager.flush();
 			entityManager.clear();
 
-			Member refMember = entityManager.getReference(Member.class, member1.getId());
-			System.out.println("refMember = " + refMember.getClass()); // 프록시클래스
+			Member member = entityManager.find(Member.class, member1.getId()); // member 만 쿼리로 조회함
+			System.out.println("member = " + member.getTeam().getClass()); // 프록시 클래스로 뜸
 
-			Hibernate.initialize(refMember); // 강제 초기화
-			refMember.getUsername();// 이렇게 할수도 있긴함
-			// 프록시 인스턴스 초기화 여부 확인
-			System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
+			System.out.println("==============");
+			member.getTeam().getName(); // 이 시점에 team 을 사용하는 시점에 쿼리가 나간다.
+			// 팀이 초기화 되면서 쿼리가 나감
+			// 즉, LAZY 로 패치해놓으면 연관된걸 프록시로 가져온다.
+			System.out.println("==============");
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
 			// 뭔가 에러나 취소가 있으면 롤백
 			tx.rollback();
-			System.out.println("e = " + e);
+			e.printStackTrace();
+//			System.out.println("e = " + e);
 		} finally {
 			entityManager.close();
 		}
@@ -61,5 +67,5 @@ public class Main {
 
 	}
 }
-// 조인전략으로 우선 진행하고 만약 비즈니스 모델이 단순하고 확장할 일이 별로 없을것 같다 하면 단일 테이블 전략 사용
-// DB 설계자와 상의를 해봐야함
+// 근데 실무에서 그냥 즉시 로딩 쓰지마
+// 예상치 못한 쿼리가 나갈 수 있다.

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -23,8 +24,11 @@ public class Member extends BaseEntity {
 	@Column(name = "USERNAME")
 	private String username;
 
-	@ManyToOne
-	@JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 이렇게 해주면 일대다 양방향 매핑이 가능함
+	// 즉시가 디폴트인가?
+	@ManyToOne(fetch = FetchType.EAGER) // 지연로딩 LAZY 를 사용해서 team 을 프록시로 조회 Member 클래스만 조회하고
+	//EAGER = 만약 member 와 team 을 빈번하게 조회한다면 선택, 왜냐 쿼리를 같이 날리기 때문에
+	//LAZY = 만약 member 만 많이 쓰고 가끔 team 을 조회한다면 선택, member 쿼리만 날리고 team 은 필요할때 프록시로 사용하기 때문
+	@JoinColumn
 	private Team team;
 
 	@OneToOne
