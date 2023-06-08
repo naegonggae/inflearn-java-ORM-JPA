@@ -42,3 +42,5 @@ public class Main {
 		emf.close();
 	}
 }
+// 싱글 테이블 전략
+// 성능이 좋다. insert 쿼리도 한방 select 쿼리도 한방 join 해서 조회할 필요도 없다.

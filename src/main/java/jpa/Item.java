@@ -8,9 +8,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)// 상속받는것들을 각각으로 생성
-@DiscriminatorColumn// (name = "aaa") 칼럼명 변경 가능 // 상속한것중에 어떤건지 알려줌 , DTYPE 알려줌
-// 상속관계를 테이블에 나타낼때 사용하길 권장
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 싱글 테이블은 상속받은 클래스들을 엔티티로 저장하지 않고 부모클래스에 뭉쳐놓는다
+//@DiscriminatorColumn// 단일 테이블 전략은 이게 없어도 자동으로 실행시켜줌
 public class Item {
 	@Id @GeneratedValue
 	private Long id;
