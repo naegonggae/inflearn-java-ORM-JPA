@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 
 @Entity(name = "Member") // 다른 이름 지정가능
 //@Table(name = "Member") // 이름 지정가능 , 엔티티와 메핑할 테이블 지정
-public class Member {
+public class Member extends BaseEntity {
 
 	@Id @GeneratedValue
 	@Column(name = "MEMBER_ID")

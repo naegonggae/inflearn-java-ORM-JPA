@@ -1,5 +1,6 @@
 package jpa;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,20 +18,15 @@ public class Main {
 
 		try {
 
-			Movie movie = new Movie();
-			movie.setDirector("aa");
-			movie.setActor("BB");
-			movie.setName("바람");
-			movie.setPrice(10000);
+			Member member = new Member();
+			member.setUsername("userA");
+			member.setCreatedBy("kim");
+			member.setCreatedDate(LocalDateTime.now());
 
-			entityManager.persist(movie);
+			entityManager.persist(member);
 
 			entityManager.flush();
 			entityManager.clear();
-
-			Item item = entityManager.find(Item.class, movie.getId());// Item 과 inner join 해서 가져옴
-			System.out.println("item = " + item);
-			// 부모 클래스로 조회하면 자식클래스를 다 뒤진다. 저장할때는 심플함
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
@@ -43,5 +39,5 @@ public class Main {
 		emf.close();
 	}
 }
-// 싱글 테이블 전략
-// 성능이 좋다. insert 쿼리도 한방 select 쿼리도 한방 join 해서 조회할 필요도 없다.
+// 조인전략으로 우선 진행하고 만약 비즈니스 모델이 단순하고 확장할 일이 별로 없을것 같다 하면 단일 테이블 전략 사용
+// DB 설계자와 상의를 해봐야함
