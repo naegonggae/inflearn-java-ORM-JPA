@@ -17,16 +17,19 @@ public class Main {
 
 		try {
 
-			Member member = new Member();
-			member.setUsername("memberA");
-			entityManager.persist(member);
+			Movie movie = new Movie();
+			movie.setDirector("aa");
+			movie.setActor("BB");
+			movie.setName("바람");
+			movie.setPrice(10000);
 
-			Team team = new Team();
-			team.setName("TeamA");
-			// 여기서 update 쿼리가 나감
-			team.getMembers().add(member);
+			entityManager.persist(movie);
 
-			entityManager.persist(team);
+			entityManager.flush();
+			entityManager.clear();
+
+			Movie findMovie = entityManager.find(Movie.class, movie.getId()); // Item 과 inner join 해서 가져옴
+			System.out.println("findMovie = " + findMovie);
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
@@ -39,6 +42,3 @@ public class Main {
 		emf.close();
 	}
 }
-// 다대다 매핑의 한계
-// 매핑정보만 넣고 다른 정보들을 추가로 넣는게 안됨
-// 비즈니스 로직은 복잡하기 때문에 ManyToManny 하지 말고 중간 테이블둬서 일대다 - 다대일 매핑하는게 좋다.
