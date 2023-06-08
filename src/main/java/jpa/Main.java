@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import org.hibernate.Hibernate;
 
 public class Main {
 
@@ -29,11 +30,10 @@ public class Main {
 			Member refMember = entityManager.getReference(Member.class, member1.getId());
 			System.out.println("refMember = " + refMember.getClass()); // 프록시클래스
 
-			entityManager.detach(refMember);
-			// 프록시 클래스는 영속성 컨텍스트에서 값을 찾아오는데 영속성컨텍스트를 비워버리면 no Session 에러가 떠서 찾아올수 없게 된다.
-			// 실무에서 많이 만난다고함
-
-			System.out.println("refMember = " + refMember.getUsername());
+			Hibernate.initialize(refMember); // 강제 초기화
+			refMember.getUsername();// 이렇게 할수도 있긴함
+			// 프록시 인스턴스 초기화 여부 확인
+			System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
