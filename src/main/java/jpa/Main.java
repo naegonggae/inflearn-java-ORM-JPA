@@ -25,9 +25,21 @@ public class Main {
 			parent.addChild(child2);
 
 			entityManager.persist(parent);
+			entityManager.persist(child1);
+			entityManager.persist(child2);
+
+			entityManager.flush();
+			entityManager.clear();
+
+			Parent findParent = entityManager.find(Parent.class, parent.getId());
+			entityManager.remove(findParent);
+			// 이러면 Parent 안에 childList 는 다 지워지기 때문에 child 도 비워진다.
+			// cascade All 해놔도 결과는 똑같긴함
+
+//			findParent.getChildList().remove(0);
 
 			// parent 중심으로 Parent 가 저장될때 child 도 저장되면 좋겠어 하면
-
+			// 영속성 전이(CASCADE)와 고아 객체를 동시에 사용하면 뭐가 좋나 parent 만 동작해서 child 까지 관리가능하다
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
 			// 뭔가 에러나 취소가 있으면 롤백

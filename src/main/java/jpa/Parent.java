@@ -15,11 +15,9 @@ public class Parent {
 	private Long id;
 	private String name;
 
-	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-	// cascade 하니까 main 에서 parent 저장하니까 join 되어있던 child 도 올라감
-	// 영속성 전이 저장, 실무에서 자주 사용한다함
-	// 그럼 언제 사용하냐 parent 만 child 를 관리할때 사용함 어느 게시물의 첨부파일마냥 child 는 parent 말고 다른 곳에서 쓰이면 안됨
-	// child 의 소유자가 하나일때
+	@OneToMany(mappedBy = "parent", orphanRemoval = true)
+	// orphanRemoval = true 해놓으면 childList 에서 값이 빠지면 진짜 삭제해버린다.
+	// 참조하는 곳이 하나일 경우 사용해
 	private List<Child> childList = new ArrayList<>();
 
 	public void addChild(Child child) {
