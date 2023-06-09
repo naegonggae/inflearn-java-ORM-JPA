@@ -1,13 +1,10 @@
 package jpa;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
-import org.hibernate.Hibernate;
 
 public class Main {
 
@@ -20,28 +17,16 @@ public class Main {
 
 		try {
 
-			Team team = new Team();
-			team.setName("teamA");
-			entityManager.persist(team);
+			Child child1 = new Child();
+			Child child2 = new Child();
 
-			Member member1 = new Member();
-			member1.setUsername("member1");
-			member1.setTeam(team);
-			entityManager.persist(member1);
+			Parent parent = new Parent();
+			parent.addChild(child1);
+			parent.addChild(child2);
 
-			entityManager.flush();
-			entityManager.clear();
+			entityManager.persist(parent);
 
-//			Member member = entityManager.find(Member.class, member1.getId()); // member 만 쿼리로 조회함
-			List<Member> members = entityManager.createQuery(
-							"select m from Member m", Member.class)
-					.getResultList();
-			// JPQL 은 "select m from Member m" 이게 번역이 되는데 이러면 member 만 가져오게 됨 -> 이때 즉시 로딩이기 때문에 TEAM 도 불러옴
-			// 리스트의 사이즈 만큼 team 을 불러옴
-			System.out.println(members.size());
-
-			// SQL : Select * from Member
-			// SQL : Select * from Team where TEAM_ID = xxx
+			// parent 중심으로 Parent 가 저장될때 child 도 저장되면 좋겠어 하면
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
