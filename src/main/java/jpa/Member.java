@@ -1,8 +1,12 @@
 package jpa;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -37,6 +41,22 @@ public class Member extends BaseEntity {
 
 	@OneToMany(mappedBy = "member")
 	private List<MemberProduct> memberProducts = new ArrayList<>();
+
+	@Embedded
+	private Period period;
+
+	@Embedded
+	private Address address;
+
+	@Embedded // 이렇게 중복 사용은 안됨
+	// 아래 어노테이셔 붙여서 하나하나 칼럼 이름을 재정의 해주면 가능
+	@AttributeOverrides({
+			@AttributeOverride(name = "city", column = @Column(name = "x_city")),
+			@AttributeOverride(name = "street", column = @Column(name = "x_street")),
+			@AttributeOverride(name = "zipcode", column = @Column(name = "x_zipcode"))
+	})
+	private Address workAddress;
+
 	public Long getId() {
 		return id;
 	}
@@ -75,6 +95,22 @@ public class Member extends BaseEntity {
 
 	public void setMemberProducts(List<MemberProduct> memberProducts) {
 		this.memberProducts = memberProducts;
+	}
+
+	public Period getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(Period period) {
+		this.period = period;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 }
 
