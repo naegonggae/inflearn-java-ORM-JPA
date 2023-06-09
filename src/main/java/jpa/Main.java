@@ -1,6 +1,7 @@
 package jpa;
 
 import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -17,23 +18,34 @@ public class Main {
 
 		try {
 
-			Address address = new Address("city", "street", "1000");
+			Member member = new Member();
+			member.setUsername("userA");
+			member.setAddress(new Address("c", "s", "10000"));
 
-			Member member1 = new Member();
-			member1.setUsername("userA");
-			member1.setAddress(address);
-			entityManager.persist(member1);
+			// 값 타입은 라이프 사이클이 없음 그래서 member 라이프사이클에 끼어있음
+			member.getFavoriteFood().add("치킨");
+			member.getFavoriteFood().add("족발");
+			member.getFavoriteFood().add("피자");
 
-			// setter 를 없애서 불변으로 만들었는데 address 를 변경하고 싶다 하면 아래같이 써서 수정해서 member1.setAddress(address); 통으로 해줘야함
-			Address copyAddress = new Address(address.getCity(), address.getStreet(),
-					address.getZipcode()); // 이렇게 값을 복사해 놓은걸 써야 독립적으로 사용가능하다.
+			member.getAddressHistory().add(new Address("old1", "s", "10000"));
+			member.getAddressHistory().add(new Address("old2", "s", "10000"));
 
-			Member member2 = new Member();
-			member2.setUsername("userA");
-			member2.setAddress(copyAddress); // address 가 같은 주소를 바라보고 있음
-			entityManager.persist(member2);
+			entityManager.persist(member);
 
-			member1.getAddress().setCity("newCity"); // 같은 주소를 바라보고 있는걸 수정하면 둘다 반영됨
+			entityManager.flush();
+			entityManager.clear();
+
+			System.out.println("START=================");
+			Member m = entityManager.find(Member.class, member.getId());
+
+			List<Address> addressHistory = m.getAddressHistory(); // 처음에 조회 안하다가 필요로하니까 조회하기 시작함
+			for (Address address : addressHistory) {
+				System.out.println("address = " + address.getCity());
+			}
+			Set<String> favoriteFood = m.getFavoriteFood();
+			for (String ff : favoriteFood) {
+				System.out.println("favoriteFood = " + ff);
+			}
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {

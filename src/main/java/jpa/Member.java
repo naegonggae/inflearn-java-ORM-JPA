@@ -2,10 +2,14 @@ package jpa;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,6 +51,17 @@ public class Member extends BaseEntity {
 
 	@Embedded
 	private Address address;
+
+	// 컬렉션을 저장하기 위한 별도의 테이블들임
+	// 타입 컬렉션은 지연로딩 사용한다.
+	@ElementCollection
+	@CollectionTable(name = "FAVORITE_FOOD", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+	@Column(name = "FOOD_NAME")
+	private Set<String> favoriteFood = new HashSet<>();
+
+	@ElementCollection
+	@CollectionTable(name = "ADDRESS", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+	private List<Address> addressHistory = new ArrayList<>();
 
 	@Embedded // 이렇게 중복 사용은 안됨
 	// 아래 어노테이셔 붙여서 하나하나 칼럼 이름을 재정의 해주면 가능
@@ -111,6 +126,30 @@ public class Member extends BaseEntity {
 
 	public void setAddress(Address address) {
 		this.address = address;
+	}
+
+	public Set<String> getFavoriteFood() {
+		return favoriteFood;
+	}
+
+	public void setFavoriteFood(Set<String> favoriteFood) {
+		this.favoriteFood = favoriteFood;
+	}
+
+	public List<Address> getAddressHistory() {
+		return addressHistory;
+	}
+
+	public void setAddressHistory(List<Address> addressHistory) {
+		this.addressHistory = addressHistory;
+	}
+
+	public Address getWorkAddress() {
+		return workAddress;
+	}
+
+	public void setWorkAddress(Address workAddress) {
+		this.workAddress = workAddress;
 	}
 }
 
