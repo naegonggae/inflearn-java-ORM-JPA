@@ -6,6 +6,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 
 public class Main {
 
@@ -17,41 +21,35 @@ public class Main {
 		tx.begin(); // 트랜잭션 시작
 
 		try {
+			List<Member> resultList = entityManager.createQuery(
+					// JPQL 은 엔티티를 대상으로 쿼리를 짜고 SQL 은 DB 테이블 대상으로 짠다.
+					// 객체 지향 SQL = JPQL
+					"select m from Member m where m.username like '%KKim%'",
+					Member.class
+			).getResultList();
 
-			Member member = new Member();
-			member.setUsername("userA");
-			member.setAddress(new Address("c", "s", "10000"));
+			for (Member member : resultList) {
+				System.out.println("member = " + member);
+			}
 
-			// 값 타입은 라이프 사이클이 없음 그래서 member 라이프사이클에 끼어있음
-			member.getFavoriteFood().add("치킨");
-			member.getFavoriteFood().add("족발");
-			member.getFavoriteFood().add("피자");
+			//Criteria 사용
+			// 자바 코드이기 때문에 컴파일 오류를 제공한다. 대신 복잡하다.
+			// 김영한은 실무에서 안쓴다고함 유지보수가 힘들고 보기 힘들다
+			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-			member.getAddressHistory().add(new AddressEntity("old1", "s", "10000"));
-			member.getAddressHistory().add(new AddressEntity("old2", "s", "10000"));
+			CriteriaQuery<Member> query = cb.createQuery(Member.class); // Member 에 대한 쿼리를 짤거야
 
-			entityManager.persist(member);
+			Root<Member> m = query.from(Member.class);
 
-			entityManager.flush();
-			entityManager.clear();
+			CriteriaQuery<Member> cq = query.select(m);
 
-			System.out.println("START=================");
-			Member findMember = entityManager.find(Member.class, member.getId());
-			// c -> nc 수정
-//			Address a = findMember.getAddress();
-//			findMember.setAddress(new Address("nc", a.getStreet(), a.getZipcode()));
-//
-//			// 치킨 -> 한식 수정
-//			Set<String> favoriteFood = findMember.getFavoriteFood();
-//			findMember.getFavoriteFood().remove("치킨");
-//			findMember.getFavoriteFood().add("한식"); // string 이라 이렇게 함
-//
-//			// 삭제
-			findMember.getAddressHistory().remove(new AddressEntity("old2", "s", "10000"));
-			// 전부 삭제 쿼리 하나
-			findMember.getAddressHistory().add(new AddressEntity("newCity", "s", "10000"));
-//			 추가 쿼리 두개 해줌 왜 이럴까?
-
+			// 조건에 따라 쿼리를 짜는 동적 쿼리 수행에 있어 유리하다.
+			String username = "sadsf";
+			if (username != null) {
+				cq = cq.where(cb.equal(m.get("username"), "Kim"));
+			}
+			List<Member> list = entityManager.createQuery(cq)
+					.getResultList();
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
