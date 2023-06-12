@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -59,9 +60,15 @@ public class Member extends BaseEntity {
 	@Column(name = "FOOD_NAME")
 	private Set<String> favoriteFood = new HashSet<>();
 
-	@ElementCollection
-	@CollectionTable(name = "ADDRESS", joinColumns = @JoinColumn(name = "MEMBER_ID"))
-	private List<Address> addressHistory = new ArrayList<>();
+//	@ElementCollection
+//	@CollectionTable(name = "ADDRESS", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+//	private List<Address> addressHistory = new ArrayList<>();
+	// 변경이 있을경우 다 지우고 다시 다 추가함 .. 쓰면 안된다.. 이걸쓰지말고 일대다를 쓰는걸 고려해야해
+
+	// 이렇게 사용하는게 낫다
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "MEMBER_ID")
+	private List<AddressEntity> addressHistory = new ArrayList<>();
 
 	@Embedded // 이렇게 중복 사용은 안됨
 	// 아래 어노테이셔 붙여서 하나하나 칼럼 이름을 재정의 해주면 가능
@@ -136,11 +143,11 @@ public class Member extends BaseEntity {
 		this.favoriteFood = favoriteFood;
 	}
 
-	public List<Address> getAddressHistory() {
+	public List<AddressEntity> getAddressHistory() {
 		return addressHistory;
 	}
 
-	public void setAddressHistory(List<Address> addressHistory) {
+	public void setAddressHistory(List<AddressEntity> addressHistory) {
 		this.addressHistory = addressHistory;
 	}
 

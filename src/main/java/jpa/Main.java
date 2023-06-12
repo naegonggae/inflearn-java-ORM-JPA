@@ -27,8 +27,8 @@ public class Main {
 			member.getFavoriteFood().add("족발");
 			member.getFavoriteFood().add("피자");
 
-			member.getAddressHistory().add(new Address("old1", "s", "10000"));
-			member.getAddressHistory().add(new Address("old2", "s", "10000"));
+			member.getAddressHistory().add(new AddressEntity("old1", "s", "10000"));
+			member.getAddressHistory().add(new AddressEntity("old2", "s", "10000"));
 
 			entityManager.persist(member);
 
@@ -36,16 +36,22 @@ public class Main {
 			entityManager.clear();
 
 			System.out.println("START=================");
-			Member m = entityManager.find(Member.class, member.getId());
+			Member findMember = entityManager.find(Member.class, member.getId());
+			// c -> nc 수정
+//			Address a = findMember.getAddress();
+//			findMember.setAddress(new Address("nc", a.getStreet(), a.getZipcode()));
+//
+//			// 치킨 -> 한식 수정
+//			Set<String> favoriteFood = findMember.getFavoriteFood();
+//			findMember.getFavoriteFood().remove("치킨");
+//			findMember.getFavoriteFood().add("한식"); // string 이라 이렇게 함
+//
+//			// 삭제
+			findMember.getAddressHistory().remove(new AddressEntity("old2", "s", "10000"));
+			// 전부 삭제 쿼리 하나
+			findMember.getAddressHistory().add(new AddressEntity("newCity", "s", "10000"));
+//			 추가 쿼리 두개 해줌 왜 이럴까?
 
-			List<Address> addressHistory = m.getAddressHistory(); // 처음에 조회 안하다가 필요로하니까 조회하기 시작함
-			for (Address address : addressHistory) {
-				System.out.println("address = " + address.getCity());
-			}
-			Set<String> favoriteFood = m.getFavoriteFood();
-			for (String ff : favoriteFood) {
-				System.out.println("favoriteFood = " + ff);
-			}
 
 			tx.commit(); // 트랜잭션 종료 // 임시 저장했던 쿼리를 실제로 날린다.
 		} catch (Exception e) {
